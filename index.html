@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business OS & Idea Launcher</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgWarm: '#FCEFE7',
+            sand: '#EEE6D2',
+            gold: '#CFBB99',
+            sage: '#6F8070',
+            sageDark: '#4D5D4E',
+            terracotta: '#D97757',
+            textMain: '#2D352E',
+            textMuted: '#687569',
+            
+            // 5 Distinct Phase Palette Colors
+            sparkBg: '#FDF6F0',
+            sparkHeader: '#F2DFCE',
+            sparkBorder: '#E6CFBB',
+
+            offerBg: '#FAFAF8',
+            offerHeader: '#E6D3EA',
+            offerBorder: '#D8C0DD',
+
+            buildBg: '#F5F9F6',
+            buildHeader: '#C5DCCB',
+            buildBorder: '#B2D0B9',
+
+            launchBg: '#FFFDF5',
+            launchHeader: '#FFE4AC',
+            launchBorder: '#EED092',
+
+            futureBg: '#F4F8FC',
+            futureHeader: '#CBDFF0',
+            futureBorder: '#B5D1E8'
+          },
+          boxShadow: {
+            'tactile': '0 4px 14px rgba(111, 128, 112, 0.08), 0 1px 3px rgba(0,0,0,0.04)',
+            'pop': '0 12px 28px rgba(45, 53, 46, 0.12)',
+            'glow-complete': '0 0 18px rgba(111, 128, 112, 0.45)'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    :root {
+      --bg-warm: #FCEFE7;
+      --text-main: #2D352E;
+      --sage: #6F8070;
+      --gold: #CFBB99;
+    }
+
+    body {
+      background-color: var(--bg-warm);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Custom ADHD-friendly smooth scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(238, 230, 210, 0.4);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CFBB99;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6F8070;
+    }
+
+    /* Drag & Drop Visual Styles */
+    .business-card {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .business-card:hover {
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    .business-card:active {
+      transform: scale(0.98);
+    }
+
+    .dragging {
+      opacity: 0.35;
+      transform: scale(0.95);
+    }
+
+    .drag-over {
+      background-color: rgba(207, 187, 153, 0.3) !important;
+      border-style: dashed !important;
+      border-color: #6F8070 !important;
+      transform: scale(0.99);
+    }
+
+    /* Soft gentle pulse for ADHD Micro-Move button */
+    @keyframes gentlePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 119, 87, 0.4); }
+      50% { transform: scale(1.03); box-shadow: 0 0 0 8px rgba(217, 119, 87, 0); }
+    }
+
+    .pulse-btn {
+      animation: gentlePulse 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="p-3 md:p-6 flex flex-col gap-4 max-w-[1700px] mx-auto">
+
+  <!-- Top Glassy Navigation Bar -->
+  <header class="bg-white/85 backdrop-blur-md border border-gold/40 rounded-2xl p-3.5 md:p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 sticky top-2 z-30">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-sage/10 border border-sage/30 flex items-center justify-center text-xl shadow-xs">
+        🚀
+      </div>
+      <div>
+        <h1 class="font-bold text-base md:text-lg leading-tight text-sageDark flex items-center gap-2">
+          Business OS & Idea Launcher
+          <span id="streakBadge" class="bg-gold/30 text-sageDark text-xs px-2.5 py-0.5 rounded-full font-bold border border-gold/50 flex items-center gap-1 shadow-xs" title="Consecutive days updated">
+            🔥 1d streak
+          </span>
+        </h1>
+        <p class="text-xs text-textMuted font-medium">ADHD-Friendly Micro-Business Blueprint & Launch Canvas</p>
+      </div>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="flex flex-wrap items-center gap-2">
+      <button onclick="openFocusMode()" class="pulse-btn bg-terracotta hover:bg-terracotta/90 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-xs transition">
+        <span>⚡</span> Today's 1 Business Move
+      </button>
+
+      <button onclick="pickSurpriseAction()" class="bg-sand hover:bg-sand/80 text-textMain font-medium text-xs px-3 py-2 rounded-xl border border-gold/40 flex items-center gap-1.5 transition">
+        <span>🎲</span> Surprise Action
+      </button>
+
+      <button onclick="openBrainDump()" class="bg-sand hover:bg-sand/80 text-textMain font-medium text-xs px-3 py-2 rounded-xl border border-gold/40 flex items-center gap-1.5 transition">
+        <span>🧠</span> Brain Dump
+      </button>
+
+      <button onclick="openCardModal()" class="bg-sage hover:bg-sageDark text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition shadow-xs">
+        <span>➕</span> Add Business Idea
+      </button>
+
+      <div class="relative min-w-[130px] md:min-w-[160px]">
+        <input type="text" id="searchInput" oninput="renderCanvas()" placeholder="🔍 Search business..." class="w-full bg-white text-xs border border-gold/40 rounded-xl px-3 py-2 outline-none focus:border-sage transition">
+      </div>
+
+      <div class="flex items-center gap-1 border-l border-gold/30 pl-2">
+        <button onclick="exportJSON()" title="Export JSON Backup" class="p-2 hover:bg-sand/50 rounded-xl text-xs transition">💾</button>
+        <button onclick="importJSON()" title="Import JSON Backup" class="p-2 hover:bg-sand/50 rounded-xl text-xs transition">📥</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 5-Column Business Canvas Layout -->
+  <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 flex-1 items-start">
+    
+    <!-- Column 1: 💡 Spark & Vision -->
+    <section class="bg-sparkBg border border-sparkBorder rounded-2xl p-3 flex flex-col gap-3 min-h-[550px] transition-all"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'spark')">
+      <div class="flex items-center justify-between bg-sparkHeader/70 p-2.5 rounded-xl border border-sparkBorder/80">
+        <div class="flex items-center gap-2">
+          <span class="text-base">💡</span>
+          <div>
+            <h2 class="font-bold text-xs uppercase tracking-wider text-textMain">Spark & Vision</h2>
+            <p class="text-[10px] text-textMuted font-medium">Ideas & Audience</p>
+          </div>
+        </div>
+        <span id="progress-spark" class="text-xs font-bold text-textMain bg-white/90 px-2 py-0.5 rounded-md border border-sparkBorder">0%</span>
+      </div>
+      <div class="h-1.5 bg-sand/50 rounded-full overflow-hidden">
+        <div id="bar-spark" class="h-full bg-gold transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div id="col-spark" class="flex flex-col gap-3 flex-1 pb-4"></div>
+    </section>
+
+    <!-- Column 2: 🎨 Offer & Branding -->
+    <section class="bg-offerBg border border-offerBorder rounded-2xl p-3 flex flex-col gap-3 min-h-[550px] transition-all"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'offer')">
+      <div class="flex items-center justify-between bg-offerHeader/70 p-2.5 rounded-xl border border-offerBorder/80">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🎨</span>
+          <div>
+            <h2 class="font-bold text-xs uppercase tracking-wider text-textMain">Offer & Branding</h2>
+            <p class="text-[10px] text-textMuted font-medium">Products & Aesthetics</p>
+          </div>
+        </div>
+        <span id="progress-offer" class="text-xs font-bold text-textMain bg-white/90 px-2 py-0.5 rounded-md border border-offerBorder">0%</span>
+      </div>
+      <div class="h-1.5 bg-sand/50 rounded-full overflow-hidden">
+        <div id="bar-offer" class="h-full bg-[#B28CB8] transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div id="col-offer" class="flex flex-col gap-3 flex-1 pb-4"></div>
+    </section>
+
+    <!-- Column 3: 🛠️ Build & Systems -->
+    <section class="bg-buildBg border border-buildBorder rounded-2xl p-3 flex flex-col gap-3 min-h-[550px] transition-all"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'build')">
+      <div class="flex items-center justify-between bg-buildHeader/70 p-2.5 rounded-xl border border-buildBorder/80">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🛠️</span>
+          <div>
+            <h2 class="font-bold text-xs uppercase tracking-wider text-sageDark">Build & Systems</h2>
+            <p class="text-[10px] text-textMuted font-medium">Notion & Workflows</p>
+          </div>
+        </div>
+        <span id="progress-build" class="text-xs font-bold text-sageDark bg-white/90 px-2 py-0.5 rounded-md border border-buildBorder">0%</span>
+      </div>
+      <div class="h-1.5 bg-sand/50 rounded-full overflow-hidden">
+        <div id="bar-build" class="h-full bg-sage transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div id="col-build" class="flex flex-col gap-3 flex-1 pb-4"></div>
+    </section>
+
+    <!-- Column 4: 🚀 Launch & Growth -->
+    <section class="bg-launchBg border border-launchBorder rounded-2xl p-3 flex flex-col gap-3 min-h-[550px] transition-all"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'launch')">
+      <div class="flex items-center justify-between bg-launchHeader/70 p-2.5 rounded-xl border border-launchBorder/80">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🚀</span>
+          <div>
+            <h2 class="font-bold text-xs uppercase tracking-wider text-textMain">Launch & Growth</h2>
+            <p class="text-[10px] text-textMuted font-medium">Marketing & Sales</p>
+          </div>
+        </div>
+        <span id="progress-launch" class="text-xs font-bold text-textMain bg-white/90 px-2 py-0.5 rounded-md border border-launchBorder">0%</span>
+      </div>
+      <div class="h-1.5 bg-sand/50 rounded-full overflow-hidden">
+        <div id="bar-launch" class="h-full bg-terracotta transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div id="col-launch" class="flex flex-col gap-3 flex-1 pb-4"></div>
+    </section>
+
+    <!-- Column 5: 🔮 Future Horizon -->
+    <section class="bg-futureBg border border-futureBorder rounded-2xl p-3 flex flex-col gap-3 min-h-[550px] transition-all"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event, 'future')">
+      <div class="flex items-center justify-between bg-futureHeader/70 p-2.5 rounded-xl border border-futureBorder/80">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🔮</span>
+          <div>
+            <h2 class="font-bold text-xs uppercase tracking-wider text-textMain">Future Horizon</h2>
+            <p class="text-[10px] text-textMuted font-medium">Scaling & Dreams</p>
+          </div>
+        </div>
+        <span id="progress-future" class="text-xs font-bold text-textMain bg-white/90 px-2 py-0.5 rounded-md border border-futureBorder">0%</span>
+      </div>
+      <div class="h-1.5 bg-sand/50 rounded-full overflow-hidden">
+        <div id="bar-future" class="h-full bg-[#6290B5] transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div id="col-future" class="flex flex-col gap-3 flex-1 pb-4"></div>
+    </section>
+
+  </main>
+
+  <!-- Card Detail / Edit Modal -->
+  <div id="cardModal" class="fixed inset-0 bg-textMain/40 backdrop-blur-xs z-50 hidden items-center justify-center p-3 md:p-4">
+    <div class="bg-white border border-gold/50 rounded-2xl w-full max-w-xl p-5 shadow-pop flex flex-col gap-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-sand/60 pb-3">
+        <h3 id="modalHeaderTitle" class="font-bold text-base text-sageDark flex items-center gap-2">✨ Edit Business Idea Block</h3>
+        <button onclick="closeModal('cardModal')" class="text-textMuted hover:text-textMain p-1 rounded-lg">✕</button>
+      </div>
+
+      <form id="cardForm" onsubmit="saveCardForm(event)" class="flex flex-col gap-3">
+        <input type="hidden" id="cardId">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="md:col-span-2 flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">Title / Idea Name</label>
+            <input type="text" id="cardTitle" required placeholder="e.g. Creator OS Notion Template" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">Business Column</label>
+            <select id="cardCategory" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+              <option value="spark">💡 Spark & Vision</option>
+              <option value="offer">🎨 Offer & Branding</option>
+              <option value="build">🛠️ Build & Systems</option>
+              <option value="launch">🚀 Launch & Growth</option>
+              <option value="future">🔮 Future Horizon</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">Subtitle / Elevator Pitch</label>
+          <input type="text" id="cardSubtitle" placeholder="e.g. All-in-one minimal dashboard for solo founders" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-terracotta flex items-center gap-1">🎯 Today's 1 Micro-Move (ADHD Reduced Paralysis Step)</label>
+          <input type="text" id="cardNextAction" placeholder="e.g. Write down 3 core dashboard sections" class="w-full bg-launchBg border border-launchBorder rounded-xl p-2.5 text-xs font-medium outline-none focus:border-terracotta">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">💡 Why / Brand Vibe</label>
+            <input type="text" id="cardWhy" placeholder="e.g. Calm, cozy, structured productivity" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">💰 Price Point / Monetization</label>
+            <input type="text" id="cardMonetization" placeholder="e.g. $29 digital download / Gumroad" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">🧰 Tools & Resources</label>
+            <input type="text" id="cardTools" placeholder="e.g. Notion, Canva, Gumroad, Pinterest" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">📅 Target Launch Date</label>
+            <input type="date" id="cardDeadline" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2 text-xs outline-none focus:border-sage">
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">🏁 Definition of Done</label>
+          <input type="text" id="cardDoneDef" placeholder="e.g. Storefront live with cover images & demo video" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">📊 Progress (<span id="progressNum">0</span>%)</label>
+          <input type="range" id="cardProgress" min="0" max="100" value="0" oninput="document.getElementById('progressNum').innerText = this.value" class="w-full accent-sage mt-1">
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-sand/60 mt-1">
+          <button type="button" onclick="deleteCurrentCard()" class="text-xs text-red-500 hover:text-red-700 font-semibold px-3 py-2 rounded-xl hover:bg-red-50 transition">
+            🗑️ Delete
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeModal('cardModal')" class="text-xs text-textMuted font-medium px-4 py-2 rounded-xl hover:bg-sand/40">Cancel</button>
+            <button type="submit" class="text-xs bg-sage hover:bg-sageDark text-white font-bold px-5 py-2.5 rounded-xl shadow-xs transition">Save Idea Block</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Brain Dump Modal -->
+  <div id="brainDumpModal" class="fixed inset-0 bg-textMain/40 backdrop-blur-xs z-50 hidden items-center justify-center p-3 md:p-4">
+    <div class="bg-white border border-gold/50 rounded-2xl w-full max-w-md p-5 shadow-pop flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-sand/60 pb-3">
+        <h3 class="font-bold text-base text-sageDark flex items-center gap-2">🧠 Brain Dump → Business Plan</h3>
+        <button onclick="closeModal('brainDumpModal')" class="text-textMuted hover:text-textMain p-1 rounded-lg">✕</button>
+      </div>
+      <p class="text-xs text-textMuted leading-relaxed">Feeling overwhelmed? Paste or type raw business thoughts, ideas, or to-dos below. Each line will instantly turn into a business card!</p>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-textMuted">Target Phase Column</label>
+        <select id="brainDumpCategory" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-2.5 text-xs outline-none focus:border-sage">
+          <option value="spark">💡 Destination: Spark & Vision</option>
+          <option value="offer">🎨 Destination: Offer & Branding</option>
+          <option value="build">🛠️ Destination: Build & Systems</option>
+          <option value="launch">🚀 Destination: Launch & Growth</option>
+          <option value="future">🔮 Destination: Future Horizon</option>
+        </select>
+        
+        <textarea id="brainDumpInput" rows="5" placeholder="e.g.&#10;Design signature pastel logo in Canva&#10;Setup Gumroad storefront bio&#10;Draft 3 Pinterest pins for product teaser" class="w-full bg-sand/20 border border-gold/40 rounded-xl p-3 text-xs outline-none focus:border-sage"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('brainDumpModal')" class="text-xs text-textMuted font-medium px-4 py-2 rounded-xl hover:bg-sand/40">Cancel</button>
+        <button onclick="processBrainDump()" class="text-xs bg-terracotta hover:bg-terracotta/90 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-xs">
+          ✨ Convert to Cards
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Today's 1 Move & Focus Overlay Modal -->
+  <div id="focusModal" class="fixed inset-0 bg-textMain/70 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="bg-white border-2 border-terracotta rounded-3xl w-full max-w-lg p-6 shadow-pop flex flex-col gap-5 text-center relative overflow-hidden">
+      <div class="flex justify-between items-center text-xs font-bold uppercase tracking-wider text-terracotta">
+        <span id="focusModalTag">⚡ 1 Micro-Business Move Focus Mode</span>
+        <button onclick="closeModal('focusModal')" class="text-textMuted hover:text-textMain p-1 rounded-lg">✕</button>
+      </div>
+
+      <div id="focusCardContainer" class="flex flex-col gap-4 my-2">
+        <!-- Dynamic content injected via JS -->
+      </div>
+
+      <div class="flex items-center justify-center gap-3 pt-1">
+        <button onclick="closeModal('focusModal')" class="text-xs bg-sand hover:bg-sand/80 text-textMain font-semibold px-4 py-2.5 rounded-xl transition">
+          Close Focus
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas Confetti Overlay -->
+  <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full"></canvas>
+
+  <script>
+    // Main App State
+    let state = {
+      cards: [],
+      streak: 1,
+      lastActiveDate: new Date().toISOString().slice(0, 10)
+    };
+
+    let draggedCardId = null;
+
+    // Realistic Pre-configured Business Ideas Data
+    const initialStarterCards = [
+      {
+        id: 'b1',
+        title: 'Minimal Creator Studio Brand',
+        subtitle: 'Aesthetic, minimal digital templates & tools for creators',
+        category: 'spark',
+        progress: 80,
+        nextAction: 'Write 3 core aesthetic principles (warm, cozy, minimal)',
+        why: 'Build sustainable remote business',
+        monetization: '$25 - $49 downloads',
+        tools: 'Canva, Notion, Pinterest',
+        deadline: '2026-10-15',
+        doneDef: 'Brand guidelines & visual palette finalized'
+      },
+      {
+        id: 'b2',
+        title: 'Notion Life OS Starter Kit',
+        subtitle: 'All-in-one aesthetic dashboard for ADHD & micro-solopreneurs',
+        category: 'offer',
+        progress: 45,
+        nextAction: 'Outline 5 core dashboard modules',
+        why: 'Help neurodivergent creators stay organized without stress',
+        monetization: '$29 / Gumroad',
+        tools: 'Notion, Figma, Loom',
+        deadline: '2026-11-01',
+        doneDef: 'Template built and tested with 3 beta users'
+      },
+      {
+        id: 'b3',
+        title: 'Gumroad Storefront & Checkout',
+        subtitle: 'Cozy shop landing page with custom cover artwork',
+        category: 'build',
+        progress: 20,
+        nextAction: 'Design 1 featured product mockup image',
+        why: 'Frictionless purchasing experience',
+        monetization: 'Direct sales channel',
+        tools: 'Gumroad, Stripe',
+        deadline: '',
+        doneDef: 'Shop live with custom banner and product buy links'
+      },
+      {
+        id: 'b4',
+        title: 'Pinterest Organic Funnel',
+        subtitle: 'Create 10 aesthetic pins showcasing template features',
+        category: 'launch',
+        progress: 10,
+        nextAction: 'Create 1 pin template in Canva',
+        why: 'Drive steady organic search traffic',
+        monetization: 'Inbound traffic',
+        tools: 'Pinterest, Tailwind App, Canva',
+        deadline: '',
+        doneDef: '10 pins scheduled and linking to storefront'
+      },
+      {
+        id: 'b5',
+        title: 'Custom Brand Collabs & VIP Days',
+        subtitle: 'High-touch 1:1 Notion setup client services',
+        category: 'future',
+        progress: 0,
+        nextAction: 'Outline VIP Day package offer page',
+        why: 'High-ticket service revenue stream',
+        monetization: '$500 / client day',
+        tools: 'Cal.com, Notion, Typeform',
+        deadline: '',
+        doneDef: 'VIP booking page published'
+      }
+    ];
+
+    function init() {
+      const savedState = localStorage.getItem('business_os_canvas_state');
+      if (savedState) {
+        try {
+          state = JSON.parse(savedState);
+        } catch(e) {
+          state.cards = initialStarterCards;
+        }
+      } else {
+        state.cards = initialStarterCards;
+      }
+
+      checkAndUpdateStreak();
+      renderCanvas();
+    }
+
+    function checkAndUpdateStreak() {
+      const today = new Date().toISOString().slice(0, 10);
+      if (state.lastActiveDate) {
+        const last = new Date(state.lastActiveDate);
+        const now = new Date(today);
+        const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          // Continuous daily visit
+        } else if (diffDays > 1) {
+          state.streak = 1;
+        }
+      }
+      state.lastActiveDate = today;
+      document.getElementById('streakBadge').innerHTML = `🔥 ${state.streak}d streak`;
+      saveState();
+    }
+
+    function saveState() {
+      localStorage.setItem('business_os_canvas_state', JSON.stringify(state));
+    }
+
+    function renderCanvas() {
+      const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase();
+      const categories = ['spark', 'offer', 'build', 'launch', 'future'];
+
+      categories.forEach(cat => {
+        const colContainer = document.getElementById(`col-${cat}`);
+        colContainer.innerHTML = '';
+
+        const catCards = state.cards.filter(c => c.category === cat && 
+          (c.title.toLowerCase().includes(searchTerm) || (c.subtitle && c.subtitle.toLowerCase().includes(searchTerm)))
+        );
+
+        // Calculate Average Column Progress
+        const avgProgress = catCards.length > 0
+          ? Math.round(catCards.reduce((acc, c) => acc + Number(c.progress || 0), 0) / catCards.length)
+          : 0;
+
+        document.getElementById(`progress-${cat}`).innerText = `${avgProgress}%`;
+        document.getElementById(`bar-${cat}`).style.width = `${avgProgress}%`;
+
+        catCards.forEach(card => {
+          const cardEl = document.createElement('div');
+          cardEl.className = `business-card bg-white border rounded-2xl p-3.5 shadow-tactile cursor-grab flex flex-col gap-2.5 relative select-none`;
+          cardEl.draggable = true;
+
+          const isComplete = card.progress === 100;
+          const glowAlpha = (card.progress / 100) * 0.45;
+
+          // Dynamic Card Brightening & Progress Glow Style
+          if (isComplete) {
+            cardEl.style.borderColor = '#6F8070';
+            cardEl.style.boxShadow = '0 0 16px rgba(111, 128, 112, 0.4)';
+            cardEl.style.backgroundColor = '#FFFFFF';
+          } else {
+            cardEl.style.borderColor = `rgba(207, 187, 153, ${0.4 + (card.progress / 100) * 0.5})`;
+            cardEl.style.boxShadow = `0 4px 14px rgba(111, 128, 112, 0.08), 0 0 ${card.progress / 6}px rgba(207, 187, 153, ${glowAlpha})`;
+          }
+
+          // Drag Events
+          cardEl.ondragstart = (e) => handleDragStart(e, card.id);
+          cardEl.ondragend = handleDragEnd;
+          cardEl.ondblclick = () => openCardModal(card.id);
+
+          cardEl.innerHTML = `
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h3 class="font-bold text-xs md:text-sm text-textMain leading-snug break-words">${escapeHtml(card.title)}</h3>
+                ${card.subtitle ? `<p class="text-[11px] text-textMuted leading-tight mt-0.5 line-clamp-2">${escapeHtml(card.subtitle)}</p>` : ''}
+              </div>
+              <button onclick="openCardModal('${card.id}')" class="text-textMuted hover:text-sage text-xs p-1 rounded transition shrink-0" title="Edit Card">✏️</button>
+            </div>
+
+            ${card.nextAction ? `
+              <div onclick="openCardModal('${card.id}')" class="bg-terracotta/10 border border-terracotta/20 rounded-xl px-2.5 py-1.5 text-xs text-terracotta font-semibold flex items-center gap-1.5 cursor-pointer hover:bg-terracotta/15 transition">
+                <span>🎯</span> <span class="truncate">${escapeHtml(card.nextAction)}</span>
+              </div>
+            ` : ''}
+
+            <!-- Additional Business Tags -->
+            <div class="flex flex-wrap items-center gap-1.5 text-[10px] text-textMuted pt-1">
+              ${card.monetization ? `<span class="bg-sand/40 border border-gold/30 px-2 py-0.5 rounded-md font-medium">💰 ${escapeHtml(card.monetization)}</span>` : ''}
+              ${card.deadline ? `<span class="bg-sand/40 border border-gold/30 px-2 py-0.5 rounded-md font-medium">📅 ${escapeHtml(card.deadline)}</span>` : ''}
+            </div>
+
+            <!-- Card Progress Slider -->
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-sand/40 mt-0.5">
+              <input type="range" min="0" max="100" value="${card.progress}" 
+                     onchange="updateCardProgress('${card.id}', this.value)" 
+                     class="w-full h-1 bg-sand/80 rounded-lg appearance-none cursor-pointer accent-sage">
+              <span class="text-xs font-bold ${isComplete ? 'text-sage' : 'text-textMain'} min-w-[32px] text-right">${card.progress}%</span>
+            </div>
+          `;
+
+          colContainer.appendChild(cardEl);
+        });
+      });
+    }
+
+    function handleDragStart(e, id) {
+      draggedCardId = id;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      document.querySelectorAll('section').forEach(s => s.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e, targetCat) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      if (!draggedCardId) return;
+
+      const card = state.cards.find(c => c.id === draggedCardId);
+      if (card && card.category !== targetCat) {
+        card.category = targetCat;
+        saveState();
+        renderCanvas();
+      }
+      draggedCardId = null;
+    }
+
+    function updateCardProgress(cardId, value) {
+      const card = state.cards.find(c => c.id === cardId);
+      if (card) {
+        const prev = card.progress;
+        card.progress = parseInt(value, 10);
+        if (prev < 100 && card.progress === 100) {
+          triggerConfetti();
+        }
+        saveState();
+        renderCanvas();
+      }
+    }
+
+    function openCardModal(id = null) {
+      const modal = document.getElementById('cardModal');
+      document.getElementById('cardForm').reset();
+
+      if (id) {
+        const card = state.cards.find(c => c.id === id);
+        if (card) {
+          document.getElementById('cardId').value = card.id;
+          document.getElementById('cardTitle').value = card.title || '';
+          document.getElementById('cardSubtitle').value = card.subtitle || '';
+          document.getElementById('cardCategory').value = card.category || 'spark';
+          document.getElementById('cardProgress').value = card.progress || 0;
+          document.getElementById('progressNum').innerText = card.progress || 0;
+          document.getElementById('cardNextAction').value = card.nextAction || '';
+          document.getElementById('cardWhy').value = card.why || '';
+          document.getElementById('cardMonetization').value = card.monetization || '';
+          document.getElementById('cardTools').value = card.tools || '';
+          document.getElementById('cardDeadline').value = card.deadline || '';
+          document.getElementById('cardDoneDef').value = card.doneDef || '';
+          document.getElementById('modalHeaderTitle').innerText = '✨ Edit Business Idea Block';
+        }
+      } else {
+        document.getElementById('cardId').value = '';
+        document.getElementById('modalHeaderTitle').innerText = '➕ Add New Business Idea Block';
+        document.getElementById('progressNum').innerText = '0';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function saveCardForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('cardId').value;
+      const title = document.getElementById('cardTitle').value.trim();
+      const subtitle = document.getElementById('cardSubtitle').value.trim();
+      const category = document.getElementById('cardCategory').value;
+      const progress = parseInt(document.getElementById('cardProgress').value, 10);
+      const nextAction = document.getElementById('cardNextAction').value.trim();
+      const why = document.getElementById('cardWhy').value.trim();
+      const monetization = document.getElementById('cardMonetization').value.trim();
+      const tools = document.getElementById('cardTools').value.trim();
+      const deadline = document.getElementById('cardDeadline').value;
+      const doneDef = document.getElementById('cardDoneDef').value.trim();
+
+      if (id) {
+        const card = state.cards.find(c => c.id === id);
+        if (card) {
+          const oldProgress = card.progress;
+          Object.assign(card, { title, subtitle, category, progress, nextAction, why, monetization, tools, deadline, doneDef });
+          if (oldProgress < 100 && progress === 100) triggerConfetti();
+        }
+      } else {
+        const newCard = {
+          id: 'b_' + Date.now(),
+          title, subtitle, category, progress, nextAction, why, monetization, tools, deadline, doneDef
+        };
+        state.cards.push(newCard);
+        if (progress === 100) triggerConfetti();
+      }
+
+      saveState();
+      renderCanvas();
+      closeModal('cardModal');
+    }
+
+    function deleteCurrentCard() {
+      const id = document.getElementById('cardId').value;
+      if (id && confirm('Delete this business idea block?')) {
+        state.cards = state.cards.filter(c => c.id !== id);
+        saveState();
+        renderCanvas();
+        closeModal('cardModal');
+      }
+    }
+
+    function openFocusMode() {
+      const activeCards = state.cards.filter(c => c.progress < 100);
+      if (activeCards.length === 0) {
+        alert('All business blocks completed! You are ready to launch 🎉');
+        return;
+      }
+      const focusCard = activeCards.find(c => c.nextAction) || activeCards[0];
+      renderFocusCard(focusCard, "⚡ Today's 1 Business Move");
+      document.getElementById('focusModal').classList.remove('hidden');
+      document.getElementById('focusModal').classList.add('flex');
+    }
+
+    function pickSurpriseAction() {
+      const activeCards = state.cards.filter(c => c.progress < 100 && c.nextAction);
+      if (activeCards.length === 0) {
+        alert('No micro-actions found! Add a next action step to any card.');
+        return;
+      }
+      const randomCard = activeCards[Math.floor(Math.random() * activeCards.length)];
+      renderFocusCard(randomCard, "🎲 Surprise Next Business Action");
+      document.getElementById('focusModal').classList.remove('hidden');
+      document.getElementById('focusModal').classList.add('flex');
+    }
+
+    function renderFocusCard(card, tagTitle) {
+      document.getElementById('focusModalTag').innerText = tagTitle;
+      const container = document.getElementById('focusCardContainer');
+      container.innerHTML = `
+        <h2 class="font-extrabold text-xl text-textMain mt-1">${escapeHtml(card.title)}</h2>
+        ${card.subtitle ? `<p class="text-xs text-textMuted">${escapeHtml(card.subtitle)}</p>` : ''}
+        
+        <div class="bg-launchBg border border-launchBorder p-4 rounded-2xl text-left flex flex-col gap-1 my-2">
+          <span class="text-[10px] uppercase font-bold text-terracotta tracking-wider">🎯 Micro-Next Action Step</span>
+          <p class="text-base font-bold text-textMain leading-snug">${escapeHtml(card.nextAction || 'Break down this step into 1 small move.')}</p>
+        </div>
+
+        ${card.why ? `
+          <div class="text-xs text-textMuted bg-sand/20 p-2.5 rounded-xl border border-gold/30 text-left">
+            💡 <strong>Why:</strong> ${escapeHtml(card.why)}
+          </div>
+        ` : ''}
+
+        <div class="flex flex-col gap-2 text-left bg-sand/20 p-3 rounded-xl border border-gold/30 mt-1">
+          <div class="flex justify-between text-xs font-bold text-textMuted">
+            <span>Progress</span>
+            <span>${card.progress}%</span>
+          </div>
+          <input type="range" min="0" max="100" value="${card.progress}" 
+                 onchange="updateCardProgress('${card.id}', this.value); renderFocusCard(state.cards.find(c => c.id === '${card.id}'), '${tagTitle}')" 
+                 class="w-full accent-terracotta cursor-pointer">
+        </div>
+      `;
+    }
+
+    function openBrainDump() {
+      document.getElementById('brainDumpInput').value = '';
+      document.getElementById('brainDumpModal').classList.remove('hidden');
+      document.getElementById('brainDumpModal').classList.add('flex');
+    }
+
+    function processBrainDump() {
+      const text = document.getElementById('brainDumpInput').value.trim();
+      const cat = document.getElementById('brainDumpCategory').value;
+      if (!text) return;
+
+      const lines = text.split('\n').filter(l => l.trim().length > 0);
+      lines.forEach((line, idx) => {
+        state.cards.push({
+          id: 'b_' + Date.now() + idx,
+          title: line.trim(),
+          subtitle: '',
+          category: cat,
+          progress: 0,
+          nextAction: 'Define 1 micro-step',
+          why: '',
+          monetization: '',
+          tools: '',
+          deadline: '',
+          doneDef: ''
+        });
+      });
+
+      saveState();
+      renderCanvas();
+      closeModal('brainDumpModal');
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const anchor = document.createElement('a');
+      anchor.setAttribute("href", dataStr);
+      anchor.setAttribute("download", `business_os_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+    }
+
+    function importJSON() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = event => {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            if (parsed && Array.isArray(parsed.cards)) {
+              state = parsed;
+              saveState();
+              renderCanvas();
+              alert('Business OS Canvas backup restored!');
+            }
+          } catch (err) {
+            alert('Invalid backup file format.');
+          }
+        };
+      };
+      input.click();
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#CFBB99', '#6F8070', '#D97757', '#C5DCCB', '#E6D3EA', '#FFE4AC'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 15,
+          vy: (Math.random() - 0.5) * 15 - 4,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 100
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+
+        particles.forEach(p => {
+          if (p.life > 0) {
+            active = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.25; // gravity
+            p.life -= 2;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+
+        if (active) requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // Initialize Widget
+    window.onload = init;
+  </script>
+</body>
+</html>
